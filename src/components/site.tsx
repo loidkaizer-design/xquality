@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
+import logoUrl from "@/assets/logo.png";
 
 export function Header() {
   return (
