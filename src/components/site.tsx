@@ -26,10 +26,26 @@ export function AdBanner({ label = "Advertisement", tall = false }: { label?: st
 }
 
 export function VideoCard({ v }: { v: Video }) {
+  const [failed, setFailed] = useState(false);
   return (
     <Link to="/watch/$code" params={{ code: v.file_code }} className="group block">
       <div className="aspect-video overflow-hidden rounded-md bg-card ring-1 ring-border transition group-hover:ring-primary">
-        <img src={v.single_img} alt={v.title} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+        {failed ? (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-card to-background">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
+              <Play className="h-5 w-5 fill-current" />
+            </span>
+            <span className="px-3 text-center text-xs text-muted-foreground">Preview processing…</span>
+          </div>
+        ) : (
+          <img
+            src={v.single_img}
+            alt={v.title}
+            loading="lazy"
+            onError={() => setFailed(true)}
+            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          />
+        )}
       </div>
       <h3 className="mt-2 line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary">{v.title}</h3>
     </Link>
