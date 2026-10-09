@@ -21,7 +21,7 @@ export const getVideos = createServerFn({ method: "GET" }).handler(async (): Pro
   return (json.result?.files ?? []).map((f) => ({
     file_code: f.file_code,
     title: f.title,
-    single_img: f.single_img,
+    single_img: THUMB_OVERRIDES[f.file_code] ?? f.single_img,
     length: f.length,
   }));
 });
