@@ -1,24 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { videosQuery } from "@/lib/videos.functions";
+import { AdBanner, Header, VideoCard } from "@/components/site";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "XQuality — Watch Videos" },
+      { name: "description", content: "Watch the latest videos on XQuality." },
+      { property: "og:title", content: "XQuality — Watch Videos" },
+      { property: "og:description", content: "Watch the latest videos on XQuality." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(videosQuery),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const { data } = useSuspenseQuery(videosQuery);
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen">
+      <Header />
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        <AdBanner label="Top banner ad" />
+        <div className="mt-6 flex gap-6">
+          <section className="flex-1">
+            <h1 className="font-display mb-4 text-3xl tracking-wide">Latest Videos</h1>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {data.map((v) => <VideoCard key={v.file_code} v={v} />)}
+            </div>
+            {data.length === 0 && <p className="text-muted-foreground">No videos yet.</p>}
+          </section>
+          <aside className="hidden w-[300px] shrink-0 lg:block">
+            <div className="sticky top-20"><AdBanner label="Sidebar ad 300×600" tall /></div>
+          </aside>
+        </div>
+        <div className="mt-8"><AdBanner label="Bottom banner ad" /></div>
+      </main>
     </div>
   );
 }
