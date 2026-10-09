@@ -5,6 +5,12 @@ export type Video = { file_code: string; title: string; single_img: string; leng
 
 const FOLDER_ID = "1852697"; // "Ace of Spades"
 
+// Manual thumbnail replacements, keyed by file_code.
+const THUMB_OVERRIDES: Record<string, string> = {
+  x3cq6njcp5yu: "https://imgds.net/splash/ccarsm7xsqnuoa9g.jpg", // "humahangad ng pinasok ni papi"
+};
+
+
 export const getVideos = createServerFn({ method: "GET" }).handler(async (): Promise<Video[]> => {
   const key = process.env["DOOD_API_KEY"];
   if (!key) throw new Error("Missing DOOD_API_KEY");
