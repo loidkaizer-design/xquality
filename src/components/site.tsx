@@ -2,13 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
+import logoUrl from "@/assets/logo.png";
 
 export function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center px-4">
-        <Link to="/" className="font-display text-2xl tracking-wider text-foreground">
-          <span className="text-primary">X</span>QUALITY
+        <Link to="/" aria-label="XQuality home" className="flex items-center">
+          <img src={logoUrl} alt="XQuality" className="h-8 w-auto" />
         </Link>
       </div>
     </header>
