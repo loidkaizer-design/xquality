@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
 
 export function Header() {
