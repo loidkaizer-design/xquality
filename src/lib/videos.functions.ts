@@ -6,7 +6,7 @@ export type Video = { file_code: string; title: string; single_img: string; leng
 const FOLDER_ID = "1852697"; // "Ace of Spades"
 
 export const getVideos = createServerFn({ method: "GET" }).handler(async (): Promise<Video[]> => {
-  const key = process.env.DOOD_API_KEY;
+  const key = process.env["DOOD_API_KEY"];
   if (!key) throw new Error("Missing DOOD_API_KEY");
   const res = await fetch(
     `https://doodapi.co/api/file/list?key=${key}&fld_id=${FOLDER_ID}&per_page=200`,
