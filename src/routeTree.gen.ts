@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WatchCodeRouteImport } from './routes/watch.$code'
+import { Route as ApiThumbnailCodeRouteImport } from './routes/api/thumbnail.$code'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const WatchCodeRoute = WatchCodeRouteImport.update({
   path: '/watch/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiThumbnailCodeRoute = ApiThumbnailCodeRouteImport.update({
+  id: '/api/thumbnail/$code',
+  path: '/api/thumbnail/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/watch/$code': typeof WatchCodeRoute
+  '/api/thumbnail/$code': typeof ApiThumbnailCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/watch/$code': typeof WatchCodeRoute
+  '/api/thumbnail/$code': typeof ApiThumbnailCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/watch/$code': typeof WatchCodeRoute
+  '/api/thumbnail/$code': typeof ApiThumbnailCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/watch/$code'
+  fullPaths: '/' | '/watch/$code' | '/api/thumbnail/$code'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/watch/$code'
-  id: '__root__' | '/' | '/watch/$code'
+  to: '/' | '/watch/$code' | '/api/thumbnail/$code'
+  id: '__root__' | '/' | '/watch/$code' | '/api/thumbnail/$code'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   WatchCodeRoute: typeof WatchCodeRoute
+  ApiThumbnailCodeRoute: typeof ApiThumbnailCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WatchCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/thumbnail/$code': {
+      id: '/api/thumbnail/$code'
+      path: '/api/thumbnail/$code'
+      fullPath: '/api/thumbnail/$code'
+      preLoaderRoute: typeof ApiThumbnailCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   WatchCodeRoute: WatchCodeRoute,
+  ApiThumbnailCodeRoute: ApiThumbnailCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

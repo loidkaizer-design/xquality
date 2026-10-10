@@ -6,7 +6,6 @@ export type Video = { file_code: string; title: string; thumbnail: string; lengt
 type DoodListFile = {
   file_code: string;
   title: string;
-  single_img?: string;
   length?: string;
 };
 
@@ -14,10 +13,6 @@ type DoodListResponse = { result?: { files?: DoodListFile[] } };
 type DoodStatusResponse = {
   status?: number;
   result?: Array<{ status?: string; filecode?: string }>;
-};
-type DoodImageResponse = {
-  status?: number;
-  result?: Array<{ thumb_img?: string; single_img?: string }>;
 };
 
 const FOLDER_ID = "1852697"; // "Ace of Spades"
@@ -51,20 +46,10 @@ async function getActiveVideo(key: string, file: DoodListFile): Promise<Video | 
     const isActive = status.status === 200 && status.result?.[0]?.status === "Active";
     if (!isActive) return null;
 
-    // The list endpoint already supplies DoodStream's generated snapshot URL.
-    // Prefer it because the separate image endpoint may return a thumbnail host
-    // that is protected by an anti-DDoS redirect and cannot be loaded by <img>.
-    let thumbnail = file.single_img;
-    if (!thumbnail) {
-      const image = await doodFetch<DoodImageResponse>("file/image", key, file.file_code);
-      thumbnail = image.result?.[0]?.thumb_img ?? image.result?.[0]?.single_img;
-    }
-    if (!thumbnail) return null;
-
     return {
       file_code: file.file_code,
       title: file.title,
-      thumbnail,
+      thumbnail: `/api/thumbnail/${encodeURIComponent(file.file_code)}`,
       length: file.length ?? "",
     };
   } catch (error) {
