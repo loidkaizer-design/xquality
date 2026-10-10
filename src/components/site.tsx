@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
 import logoUrl from "@/assets/logo.png";
@@ -22,8 +22,6 @@ declare global {
   }
 }
 
-let adSeq = 0;
-
 export function AdBanner({
   label = "Advertisement",
   tall = false,
@@ -31,7 +29,8 @@ export function AdBanner({
   label?: string;
   tall?: boolean;
 }) {
-  const idRef = useRef(`ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${++adSeq}`);
+  const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const idRef = useRef(`ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${reactId}`);
 
   useEffect(() => {
     const w = window;
