@@ -23,6 +23,25 @@ function getImageCandidates(url: string) {
   return [...new Set(candidates)];
 }
 
+function escapeXml(s: string) {
+  return s.replace(/[<>&"']/g, (c) => `&#${c.charCodeAt(0)};`);
+}
+
+// Branded red/black cover used when the video service has no usable preview yet.
+function fallbackCover(title: string) {
+  const t = escapeXml(title.length > 40 ? title.slice(0, 39) + "…" : title);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a0a0a"/><stop offset="1" stop-color="#3a0000"/></linearGradient></defs>
+<rect width="640" height="360" fill="url(#g)"/>
+<circle cx="320" cy="150" r="48" fill="#dc2626"/>
+<path d="M305 125 L345 150 L305 175 Z" fill="#000"/>
+<text x="320" y="260" fill="#fff" font-family="Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">${t}</text>
+</svg>`;
+  return new Response(svg, {
+    headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=300" },
+  });
+}
+
 export const Route = createFileRoute("/api/thumbnail/$code")({
   server: {
     handlers: {
@@ -44,10 +63,11 @@ export const Route = createFileRoute("/api/thumbnail/$code")({
           }
 
           const metadata = (await metadataResponse.json()) as DoodImageResponse;
-          const imageUrl = metadata.result?.[0]?.single_img ?? metadata.result?.[0]?.thumb_img;
-          if (!imageUrl) return new Response("Thumbnail not found", { status: 404 });
+          const r = metadata.result?.[0];
+          const title = (r as { title?: string } | undefined)?.title ?? "XQuality";
+          const urls = [r?.single_img, r?.thumb_img, r?.splash_img].filter(Boolean) as string[];
 
-          for (const candidate of getImageCandidates(imageUrl)) {
+          for (const candidate of urls.flatMap(getImageCandidates)) {
             try {
               const imageResponse = await fetch(candidate, {
                 signal: AbortSignal.timeout(8_000),
@@ -72,10 +92,10 @@ export const Route = createFileRoute("/api/thumbnail/$code")({
             }
           }
 
-          return new Response("Thumbnail image unavailable", { status: 502 });
+          return fallbackCover(title);
         } catch (error) {
           console.error(`Thumbnail proxy failed for ${code}`, error);
-          return new Response("Thumbnail proxy failed", { status: 502 });
+          return fallbackCover("XQuality");
         }
       },
     },
