@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
 import logoUrl from "@/assets/logo.png";
@@ -22,8 +22,6 @@ declare global {
   }
 }
 
-let adSeq = 0;
-
 export function AdBanner({
   label = "Advertisement",
   tall = false,
@@ -31,7 +29,9 @@ export function AdBanner({
   label?: string;
   tall?: boolean;
 }) {
-  const idRef = useRef(`ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${++adSeq}`);
+  const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const slotId = `ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${reactId}`;
+  const idRef = { current: slotId };
 
   useEffect(() => {
     const w = window;
@@ -47,6 +47,12 @@ export function AdBanner({
       js.src = "https://static.servestatic.net/js/ytrgt.js";
       document.head.appendChild(js);
     }
+    const hide = () => {
+      const s = document.getElementById(idRef.current);
+      if (s) s.style.display = "none";
+    };
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:nobid", hide);
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:error", hide);
     w.ytrgt("hb:load", `#${idRef.current}`, {
       endpoint: "https://collect.rtb.events/hb",
       publisherId: "bf1d9519394a4c8685049a6b0d846ba4",
