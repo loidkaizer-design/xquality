@@ -52,7 +52,7 @@ export function VideoCard({ v }: { v: Video }) {
             alt={v.title}
             loading="lazy"
             onError={() => setFailed(true)}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
           />
         )}
       </div>
