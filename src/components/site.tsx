@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
 import logoUrl from "@/assets/logo.png";
@@ -16,6 +16,14 @@ export function Header() {
   );
 }
 
+declare global {
+  interface Window {
+    ytrgt?: ((...args: unknown[]) => void) & { q?: unknown[] };
+  }
+}
+
+let adSeq = 0;
+
 export function AdBanner({
   label = "Advertisement",
   tall = false,
@@ -23,11 +31,38 @@ export function AdBanner({
   label?: string;
   tall?: boolean;
 }) {
+  const idRef = useRef(`ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${++adSeq}`);
+
+  useEffect(() => {
+    const w = window;
+    if (!w.ytrgt) {
+      w.ytrgt = Object.assign(
+        (...args: unknown[]) => {
+          (w.ytrgt!.q = w.ytrgt!.q || []).push(args);
+        },
+        { q: [] as unknown[] },
+      );
+      const js = document.createElement("script");
+      js.async = true;
+      js.src = "https://static.servestatic.net/js/ytrgt.js";
+      document.head.appendChild(js);
+    }
+    w.ytrgt("hb:load", `#${idRef.current}`, {
+      endpoint: "https://collect.rtb.events/hb",
+      publisherId: "bf1d9519394a4c8685049a6b0d846ba4",
+      sizes: tall ? [[300, 600]] : [[300, 250], [728, 90], [320, 50]],
+      tmax: 1000,
+      showAdMark: true,
+    });
+  }, [tall]);
+
   return (
     <div
-      className={`ad-slot flex w-full items-center justify-center rounded-md text-xs uppercase tracking-widest text-muted-foreground ${tall ? "h-[600px]" : "h-24"}`}
+      className={`ad-slot flex w-full items-center justify-center rounded-md text-xs uppercase tracking-widest text-muted-foreground ${tall ? "min-h-[600px]" : "min-h-24"}`}
     >
-      {label}
+      <div id={idRef.current} className="flex w-full items-center justify-center">
+        {label}
+      </div>
     </div>
   );
 }
