@@ -16,7 +16,13 @@ export function Header() {
   );
 }
 
-export function AdBanner({ label = "Advertisement", tall = false }: { label?: string; tall?: boolean }) {
+export function AdBanner({
+  label = "Advertisement",
+  tall = false,
+}: {
+  label?: string;
+  tall?: boolean;
+}) {
   return (
     <div
       className={`ad-slot flex w-full items-center justify-center rounded-md text-xs uppercase tracking-widest text-muted-foreground ${tall ? "h-[600px]" : "h-24"}`}
@@ -36,11 +42,13 @@ export function VideoCard({ v }: { v: Video }) {
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
               <Play className="h-5 w-5 fill-current" />
             </span>
-            <span className="px-3 text-center text-xs text-muted-foreground">Preview processing…</span>
+            <span className="px-3 text-center text-xs text-muted-foreground">
+              Preview processing…
+            </span>
           </div>
         ) : (
           <img
-            src={v.single_img}
+            src={v.thumbnail}
             alt={v.title}
             loading="lazy"
             onError={() => setFailed(true)}
@@ -48,7 +56,9 @@ export function VideoCard({ v }: { v: Video }) {
           />
         )}
       </div>
-      <h3 className="mt-2 line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary">{v.title}</h3>
+      <h3 className="mt-2 line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary">
+        {v.title}
+      </h3>
     </Link>
   );
 }
