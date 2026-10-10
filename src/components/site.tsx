@@ -30,7 +30,8 @@ export function AdBanner({
   tall?: boolean;
 }) {
   const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
-  const idRef = useRef(`ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${reactId}`);
+  const slotId = `ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${reactId}`;
+  const idRef = { current: slotId };
 
   useEffect(() => {
     const w = window;
