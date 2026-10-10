@@ -44,18 +44,21 @@ async function doodFetch<T>(
 
 async function getActiveVideo(key: string, file: DoodListFile): Promise<Video | null> {
   try {
-    const [status, image] = await Promise.all([
-      doodFetch<DoodStatusResponse>("file/check", key, file.file_code),
-      doodFetch<DoodImageResponse>("file/image", key, file.file_code),
-    ]);
+    const status = await doodFetch<DoodStatusResponse>("file/check", key, file.file_code);
 
     // Status is intentionally used only to keep inactive files out of the listing;
     // it is not exposed as a video-validity indicator in the UI.
     const isActive = status.status === 200 && status.result?.[0]?.status === "Active";
     if (!isActive) return null;
 
-    const thumbnail =
-      image.result?.[0]?.thumb_img ?? image.result?.[0]?.single_img ?? file.single_img;
+    // The list endpoint already supplies DoodStream's generated snapshot URL.
+    // Prefer it because the separate image endpoint may return a thumbnail host
+    // that is protected by an anti-DDoS redirect and cannot be loaded by <img>.
+    let thumbnail = file.single_img;
+    if (!thumbnail) {
+      const image = await doodFetch<DoodImageResponse>("file/image", key, file.file_code);
+      thumbnail = image.result?.[0]?.thumb_img ?? image.result?.[0]?.single_img;
+    }
     if (!thumbnail) return null;
 
     return {
