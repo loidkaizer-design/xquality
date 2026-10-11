@@ -18,7 +18,7 @@ export function Header() {
 
 declare global {
   interface Window {
-    adsbygoogle?: { push: (ad: Record<string, never>) => unknown };
+    adsbygoogle?: Array<Record<string, never>>;
   }
 }
 
