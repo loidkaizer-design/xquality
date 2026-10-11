@@ -24,6 +24,7 @@ function Watch() {
   const { data } = useSuspenseQuery(videosQuery);
   const video = data.find((v) => v.file_code === code);
   const others = data.filter((v) => v.file_code !== code);
+  const [adDone, setAdDone] = useState(false);
   return (
     <div className="min-h-screen">
       <Header />
@@ -31,11 +32,14 @@ function Watch() {
         <AdBanner label="Top banner ad" />
         <div className="mt-6 flex flex-col gap-6 lg:flex-row">
           <section className="flex-1">
-            <div className="aspect-video overflow-hidden rounded-md bg-card ring-1 ring-primary/40">
-              <iframe src={`https://playmogo.com/e/${code}`} className="h-full w-full" allowFullScreen title={video?.title ?? "Video"} />
-            </div>
+            {adDone ? (
+              <div className="aspect-video overflow-hidden rounded-md bg-card ring-1 ring-primary/40">
+                <iframe src={`https://playmogo.com/e/${code}`} className="h-full w-full" allowFullScreen title={video?.title ?? "Video"} />
+              </div>
+            ) : (
+              <OutstreamAd onDone={() => setAdDone(true)} />
+            )}
             <h1 className="mt-4 text-xl font-semibold">{video?.title ?? "Video"}</h1>
-            <div className="mt-6"><OutstreamAd /></div>
             <div className="mt-6"><AdBanner label="Below player ad" /></div>
           </section>
           <aside className="w-full shrink-0 lg:w-[340px]">
