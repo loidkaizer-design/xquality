@@ -73,6 +73,50 @@ export function AdBanner({
   );
 }
 
+export function OutstreamAd() {
+  const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const slotId = `ytrgt-5e52ee5d29cf4fa58094a944be696373-${reactId}`;
+  const idRef = { current: slotId };
+
+  useEffect(() => {
+    const w = window;
+    if (!w.ytrgt) {
+      w.ytrgt = Object.assign(
+        (...args: unknown[]) => {
+          (w.ytrgt!.q = w.ytrgt!.q || []).push(args);
+        },
+        { q: [] as unknown[] },
+      );
+      const js = document.createElement("script");
+      js.async = true;
+      js.src = "https://static.servestatic.net/js/ytrgt.js";
+      document.head.appendChild(js);
+    }
+    const hide = () => {
+      const s = document.getElementById(idRef.current);
+      if (s) s.style.display = "none";
+    };
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:nobid", hide);
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:error", hide);
+    w.ytrgt("hb:load", `#${idRef.current}`, {
+      endpoint: "https://collect.rtb.events/hb",
+      publisherId: "5e52ee5d29cf4fa58094a944be696373",
+      video: { mimes: ["video/mp4"], protocols: [2, 3, 5, 6] },
+      videoOptions: { muted: "auto", skipDelay: 5, replay: true },
+      tmax: 3000,
+      showAdMark: true,
+    });
+  }, []);
+
+  return (
+    <div className="ad-slot flex w-full items-center justify-center rounded-md text-xs uppercase tracking-widest text-muted-foreground">
+      <div id={idRef.current} className="flex w-full items-center justify-center">
+        Video advertisement
+      </div>
+    </div>
+  );
+}
+
 export function VideoCard({ v }: { v: Video }) {
   const [failed, setFailed] = useState(false);
   return (
