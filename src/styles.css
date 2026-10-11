@@ -145,10 +145,4 @@
   }
 }
 
-@layer components {
-  .ad-slot {
-    border: 1px dashed color-mix(in oklch, var(--primary) 50%, transparent);
-    background: repeating-linear-gradient(45deg, var(--card), var(--card) 10px, var(--muted) 10px, var(--muted) 20px);
-  }
-}
 body { font-family: var(--font-sans); }
