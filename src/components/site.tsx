@@ -73,7 +73,7 @@ export function AdBanner({
   );
 }
 
-export function OutstreamAd() {
+export function OutstreamAd({ onDone }: { onDone?: () => void }) {
   const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
   const slotId = `ytrgt-5e52ee5d29cf4fa58094a944be696373-${reactId}`;
   const idRef = { current: slotId };
@@ -92,26 +92,28 @@ export function OutstreamAd() {
       js.src = "https://static.servestatic.net/js/ytrgt.js";
       document.head.appendChild(js);
     }
-    const hide = () => {
-      const s = document.getElementById(idRef.current);
-      if (s) s.style.display = "none";
-    };
-    w.ytrgt("hb:on", `#${idRef.current}`, "hb:nobid", hide);
-    w.ytrgt("hb:on", `#${idRef.current}`, "hb:error", hide);
+    const finish = () => onDone?.();
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:nobid", finish);
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:error", finish);
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:complete", finish);
+    w.ytrgt("hb:on", `#${idRef.current}`, "hb:skip", finish);
     w.ytrgt("hb:load", `#${idRef.current}`, {
       endpoint: "https://collect.rtb.events/hb",
       publisherId: "5e52ee5d29cf4fa58094a944be696373",
       video: { mimes: ["video/mp4"], protocols: [2, 3, 5, 6] },
-      videoOptions: { muted: "auto", skipDelay: 5, replay: true },
+      videoOptions: { muted: "auto", skipDelay: 5, replay: false },
       tmax: 3000,
       showAdMark: true,
     });
+    // Safety net: if the ad never reports an end, show the video anyway.
+    const timer = setTimeout(finish, 30000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="ad-slot flex w-full items-center justify-center rounded-md text-xs uppercase tracking-widest text-muted-foreground">
+    <div className="ad-slot flex aspect-video w-full items-center justify-center rounded-md bg-card text-xs uppercase tracking-widest text-muted-foreground">
       <div id={idRef.current} className="flex w-full items-center justify-center">
-        Video advertisement
+        Advertisement — your video will start shortly
       </div>
     </div>
   );
