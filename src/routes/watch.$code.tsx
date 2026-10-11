@@ -34,6 +34,7 @@ function Watch() {
               <iframe src={`https://playmogo.com/e/${code}`} className="h-full w-full" allowFullScreen title={video?.title ?? "Video"} />
             </div>
             <h1 className="mt-4 text-xl font-semibold">{video?.title ?? "Video"}</h1>
+            <div className="mt-6"><OutstreamAd /></div>
             <div className="mt-6"><AdBanner label="Below player ad" /></div>
           </section>
           <aside className="w-full shrink-0 lg:w-[340px]">
