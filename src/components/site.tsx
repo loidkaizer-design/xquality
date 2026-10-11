@@ -73,7 +73,7 @@ export function AdBanner({
   );
 }
 
-export function OutstreamAd() {
+export function OutstreamAd({ onDone }: { onDone?: () => void }) {
   const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
   const slotId = `ytrgt-5e52ee5d29cf4fa58094a944be696373-${reactId}`;
   const idRef = { current: slotId };
