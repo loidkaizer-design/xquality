@@ -111,9 +111,9 @@ export function OutstreamAd({ onDone }: { onDone?: () => void }) {
   }, []);
 
   return (
-    <div className="ad-slot flex w-full items-center justify-center rounded-md text-xs uppercase tracking-widest text-muted-foreground">
+    <div className="ad-slot flex aspect-video w-full items-center justify-center rounded-md bg-card text-xs uppercase tracking-widest text-muted-foreground">
       <div id={idRef.current} className="flex w-full items-center justify-center">
-        Video advertisement
+        Advertisement — your video will start shortly
       </div>
     </div>
   );

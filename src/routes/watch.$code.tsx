@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { videosQuery } from "@/lib/videos.functions";
 import { AdBanner, Header, OutstreamAd, VideoCard } from "@/components/site";
