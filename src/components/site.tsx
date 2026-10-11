@@ -30,44 +30,63 @@ export function AdBanner({
   tall?: boolean;
 }) {
   const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const nativeId = `container-8eab244318e698fc87dac0cb1fe1bc57-${reactId}`;
   const slotId = `ytrgt-bf1d9519394a4c8685049a6b0d846ba4-${reactId}`;
-  const idRef = { current: slotId };
 
   useEffect(() => {
-    const w = window;
-    if (!w.ytrgt) {
-      w.ytrgt = Object.assign(
-        (...args: unknown[]) => {
-          (w.ytrgt!.q = w.ytrgt!.q || []).push(args);
-        },
-        { q: [] as unknown[] },
-      );
-      const js = document.createElement("script");
-      js.async = true;
-      js.src = "https://static.servestatic.net/js/ytrgt.js";
-      document.head.appendChild(js);
-    }
-    const hide = () => {
-      const s = document.getElementById(idRef.current);
-      if (s) s.style.display = "none";
-    };
-    w.ytrgt("hb:on", `#${idRef.current}`, "hb:nobid", hide);
-    w.ytrgt("hb:on", `#${idRef.current}`, "hb:error", hide);
-    w.ytrgt("hb:load", `#${idRef.current}`, {
-      endpoint: "https://collect.rtb.events/hb",
-      publisherId: "bf1d9519394a4c8685049a6b0d846ba4",
-      sizes: tall ? [[300, 600]] : [[300, 250], [728, 90], [320, 50]],
-      tmax: 1000,
-      showAdMark: true,
-    });
-  }, [tall]);
+    const nativeEl = document.getElementById(nativeId);
+    const slotEl = document.getElementById(slotId);
+    if (!nativeEl || !slotEl) return;
+
+    // Default: native banner
+    const js = document.createElement("script");
+    js.async = true;
+    js.setAttribute("data-cfasync", "false");
+    js.src = "https://brijmohan.org/21/8eab244318e698fc87dac0cb1fe1bc57";
+    nativeEl.appendChild(js);
+
+    // Fallback: if the native banner didn't fill, load the ytrgt banner.
+    const timer = setTimeout(() => {
+      if (nativeEl.offsetHeight > 0 || nativeEl.childElementCount > 1) return;
+      const w = window;
+      if (!w.ytrgt) {
+        w.ytrgt = Object.assign(
+          (...args: unknown[]) => {
+            (w.ytrgt!.q = w.ytrgt!.q || []).push(args);
+          },
+          { q: [] as unknown[] },
+        );
+        const s = document.createElement("script");
+        s.async = true;
+        s.src = "https://static.servestatic.net/js/ytrgt.js";
+        document.head.appendChild(s);
+      }
+      const hide = () => {
+        slotEl.style.display = "none";
+      };
+      w.ytrgt("hb:on", `#${slotId}`, "hb:nobid", hide);
+      w.ytrgt("hb:on", `#${slotId}`, "hb:error", hide);
+      w.ytrgt("hb:load", `#${slotId}`, {
+        endpoint: "https://collect.rtb.events/hb",
+        publisherId: "bf1d9519394a4c8685049a6b0d846ba4",
+        sizes: tall ? [[300, 600]] : [[300, 250], [728, 90], [320, 50]],
+        tmax: 1000,
+        showAdMark: true,
+      });
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [tall, nativeId, slotId]);
 
   return (
     <div
       className={`ad-slot flex w-full items-center justify-center rounded-md text-xs uppercase tracking-widest text-muted-foreground ${tall ? "min-h-[600px]" : "min-h-24"}`}
     >
-      <div id={idRef.current} className="flex w-full items-center justify-center">
-        {label}
+      <div className="flex w-full flex-col items-center justify-center">
+        <div id={nativeId} className="flex w-full items-center justify-center" />
+        <div id={slotId} className="flex w-full items-center justify-center">
+          {label}
+        </div>
       </div>
     </div>
   );
