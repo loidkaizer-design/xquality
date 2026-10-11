@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Load sitewide ad verification scripts through the root route head configuration so every content page includes them once.
+
+- Render responsive AdSense units in the shared AdBanner component, initialize each once after it has width, and keep the provider script only in the root head to avoid duplicate loads.

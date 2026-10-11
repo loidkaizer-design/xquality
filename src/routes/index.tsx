@@ -24,7 +24,7 @@ function Index() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <AdBanner label="Top banner ad" />
+        <AdBanner />
         <div className="mt-6 flex gap-6">
           <section className="flex-1">
             <h1 className="font-display mb-4 text-3xl tracking-wide">Latest Videos</h1>
@@ -33,11 +33,8 @@ function Index() {
             </div>
             {data.length === 0 && <p className="text-muted-foreground">No videos yet.</p>}
           </section>
-          <aside className="hidden w-[300px] shrink-0 lg:block">
-            <div className="sticky top-20"><AdBanner label="Sidebar ad 300×600" tall /></div>
-          </aside>
         </div>
-        <div className="mt-8"><AdBanner label="Bottom banner ad" /></div>
+        <div className="mt-8"><AdBanner /></div>
       </main>
     </div>
   );
