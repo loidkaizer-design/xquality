@@ -16,15 +16,19 @@ export function Header() {
   );
 }
 
+// The native embed targets one fixed container ID, so only the first
+// AdBanner on a page mounts the container and script.
+let nativeAdClaimed = false;
+
 export function AdBanner() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const loaded = useRef(false);
+  const claimed = useRef(false);
+  if (!nativeAdClaimed) {
+    nativeAdClaimed = true;
+    claimed.current = true;
+  }
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container || loaded.current) return;
-    loaded.current = true;
-
+    if (!claimed.current) return;
     const script = document.createElement("script");
     script.async = true;
     script.setAttribute("data-cfasync", "false");
@@ -32,9 +36,11 @@ export function AdBanner() {
     document.body.appendChild(script);
   }, []);
 
+  if (!claimed.current) return null;
+
   return (
     <div className="w-full min-w-0" aria-label="Advertisement">
-      <div ref={containerRef} id="container-8eab244318e698fc87dac0cb1fe1bc57" />
+      <div id="container-8eab244318e698fc87dac0cb1fe1bc57" />
     </div>
   );
 }
