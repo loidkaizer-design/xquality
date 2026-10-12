@@ -16,46 +16,25 @@ export function Header() {
   );
 }
 
-declare global {
-  interface Window {
-    adsbygoogle?: Array<Record<string, never>>;
-  }
-}
-
 export function AdBanner() {
-  const adRef = useRef<HTMLModElement>(null);
-  const requested = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const loaded = useRef(false);
 
   useEffect(() => {
-    const ad = adRef.current;
-    if (!ad || requested.current) return;
+    const container = containerRef.current;
+    if (!container || loaded.current) return;
+    loaded.current = true;
 
-    // Responsive ads must have a measurable width before being requested.
-    const observer = new ResizeObserver(() => {
-      if (ad.offsetWidth === 0 || requested.current) return;
-      requested.current = true;
-      observer.disconnect();
-      if (ad.getAttribute("data-adsbygoogle-status")) return;
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (error) {
-        console.error("AdSense ad request failed", error);
-      }
-    });
-    observer.observe(ad);
-    return () => observer.disconnect();
+    const script = document.createElement("script");
+    script.async = true;
+    script.setAttribute("data-cfasync", "false");
+    script.src = "https://brijmohan.org/21/8eab244318e698fc87dac0cb1fe1bc57";
+    document.body.appendChild(script);
   }, []);
 
   return (
     <div className="w-full min-w-0" aria-label="Advertisement">
-      <ins
-        ref={adRef}
-        className="adsbygoogle block w-full"
-        data-ad-client="ca-pub-9476219866943996"
-        data-ad-slot="1214689877"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      />
+      <div ref={containerRef} id="container-8eab244318e698fc87dac0cb1fe1bc57" />
     </div>
   );
 }
