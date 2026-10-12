@@ -21,14 +21,12 @@ export function Header() {
 let nativeAdClaimed = false;
 
 export function AdBanner() {
-  const claimed = useRef(false);
-  if (!nativeAdClaimed) {
-    nativeAdClaimed = true;
-    claimed.current = true;
-  }
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
-    if (!claimed.current) return;
+    if (nativeAdClaimed) return;
+    nativeAdClaimed = true;
+    setActive(true);
     const script = document.createElement("script");
     script.async = true;
     script.setAttribute("data-cfasync", "false");
@@ -36,7 +34,7 @@ export function AdBanner() {
     document.body.appendChild(script);
   }, []);
 
-  if (!claimed.current) return null;
+  if (!active) return null;
 
   return (
     <div className="w-full min-w-0" aria-label="Advertisement">
