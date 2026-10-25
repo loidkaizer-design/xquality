@@ -26,7 +26,7 @@ export function Header() {
 // loaded once in the root route head; each unit initializes itself after it
 // has a non-zero width so units below the fold / late-laid-out still fill.
 export function AdBanner() {
-  const insRef = useRef<HTMLElement>(null);
+  const insRef = useRef<HTMLModElement>(null);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
