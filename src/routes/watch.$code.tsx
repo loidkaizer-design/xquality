@@ -32,7 +32,7 @@ function Watch() {
             {/* Top of the video */}
             <AdBanner />
             <div className="mt-4 aspect-video overflow-hidden rounded-md bg-card ring-1 ring-primary/40">
-              <iframe src={`https://playmogo.com/e/${code}`} className="h-full w-full" allowFullScreen title={video?.title ?? "Video"} />
+              <iframe src={`${FOLTYN_BASE}/api/e/${code}`} className="h-full w-full" allowFullScreen allow="autoplay; fullscreen; picture-in-picture" title={video?.title ?? "Video"} />
             </div>
             <h1 className="mt-4 text-xl font-semibold">{video?.title ?? "Video"}</h1>
             <div className="mt-6"><AdBanner /></div>
