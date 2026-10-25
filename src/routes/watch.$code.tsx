@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { videosQuery } from "@/lib/videos.functions";
+import { videosQuery, FOLTYN_BASE } from "@/lib/videos.functions";
 import { AdBanner, Header, VideoCard } from "@/components/site";
 
 export const Route = createFileRoute("/watch/$code")({
