@@ -1,75 +1,46 @@
 import { createServerFn } from "@tanstack/react-start";
 import { queryOptions } from "@tanstack/react-query";
 
+// Foltyn CDN — the site's own video host (see Foltyn CDN API docs).
+export const FOLTYN_BASE = "https://v0-foltyn-cdn.vercel.app";
+
 export type Video = { file_code: string; title: string; thumbnail: string; length: string };
 
-type DoodListFile = {
-  file_code: string;
-  title: string;
-  length?: string;
+type FoltynListVideo = {
+  id: string;
+  title?: string;
+  filename?: string;
+  uploaded?: string;
+  status?: string;
 };
 
-type DoodListResponse = { result?: { files?: DoodListFile[] } };
-type DoodStatusResponse = {
-  status?: number;
-  result?: Array<{ status?: string; filecode?: string }>;
+// Hand-picked thumbnails keyed by video ID — never replaced by automation.
+const THUMB_OVERRIDES: Record<string, string> = {
+  x3cq6njcp5yu: "https://imgds.net/splash/ccarsm7xsqnuoa9g.jpg",
 };
 
-const FOLDER_ID = "1852697"; // "Ace of Spades"
-
-async function doodFetch<T>(
-  endpoint: string,
-  key: string,
-  fileCode?: string,
-  extra?: Record<string, string>,
-): Promise<T> {
-  const params = new URLSearchParams({ key });
-  if (fileCode) params.set("file_code", fileCode);
-  if (extra) {
-    for (const [name, value] of Object.entries(extra)) params.set(name, value);
-  }
-
-  const response = await fetch(`https://doodapi.co/api/${endpoint}?${params.toString()}`);
-  if (!response.ok) {
-    throw new Error(`DoodStream ${endpoint} request failed with ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-}
-
-async function getActiveVideo(key: string, file: DoodListFile): Promise<Video | null> {
-  try {
-    const status = await doodFetch<DoodStatusResponse>("file/check", key, file.file_code);
-
-    // Status is intentionally used only to keep inactive files out of the listing;
-    // it is not exposed as a video-validity indicator in the UI.
-    const isActive = status.status === 200 && status.result?.[0]?.status === "Active";
-    if (!isActive) return null;
-
-    return {
-      file_code: file.file_code,
-      title: file.title,
-      thumbnail: `/api/thumbnail/${encodeURIComponent(file.file_code)}`,
-      length: file.length ?? "",
-    };
-  } catch (error) {
-    console.error(`Unable to load DoodStream metadata for ${file.file_code}`, error);
-    return null;
-  }
+function displayTitle(v: FoltynListVideo) {
+  const raw = v.title ?? v.filename ?? "Untitled";
+  return raw.replace(/\.(mp4|mkv|mov|webm|avi)$/i, "");
 }
 
 export const getVideos = createServerFn({ method: "GET" }).handler(async (): Promise<Video[]> => {
-  const key = process.env["DOOD_API_KEY"];
-  if (!key) throw new Error("Missing DOOD_API_KEY");
-
-  const json = await doodFetch<DoodListResponse>("file/list", key, undefined, {
-    fld_id: FOLDER_ID,
-    per_page: "200",
+  const response = await fetch(`${FOLTYN_BASE}/api/videos`, {
+    signal: AbortSignal.timeout(15_000),
   });
-  const files = json.result?.files ?? [];
-  const videos = await Promise.all(files.map((file) => getActiveVideo(key, file)));
+  if (!response.ok) {
+    throw new Error(`Foltyn CDN list request failed with ${response.status}`);
+  }
 
-  return videos.filter((video): video is Video => video !== null);
+  const list = (await response.json()) as FoltynListVideo[];
+  return list
+    .filter((v) => v.id && (!v.status || v.status === "Ready"))
+    .map((v) => ({
+      file_code: v.id,
+      title: displayTitle(v),
+      thumbnail: THUMB_OVERRIDES[v.id] ?? `${FOLTYN_BASE}/api/thumbnail/${v.id}`,
+      length: "",
+    }));
 });
 
 export const videosQuery = queryOptions({
