@@ -27,10 +27,11 @@ function Watch() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <AdBanner />
-        <div className="mt-6 flex flex-col gap-6 lg:flex-row">
+        <div className="flex flex-col gap-6 lg:flex-row">
           <section className="min-w-0 flex-1">
-            <div className="aspect-video overflow-hidden rounded-md bg-card ring-1 ring-primary/40">
+            {/* Top of the video */}
+            <AdBanner />
+            <div className="mt-4 aspect-video overflow-hidden rounded-md bg-card ring-1 ring-primary/40">
               <iframe src={`https://playmogo.com/e/${code}`} className="h-full w-full" allowFullScreen title={video?.title ?? "Video"} />
             </div>
             <h1 className="mt-4 text-xl font-semibold">{video?.title ?? "Video"}</h1>
