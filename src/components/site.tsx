@@ -4,6 +4,12 @@ import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
 import logoUrl from "@/assets/logo.png";
 
+declare global {
+  interface Window {
+    adsbygoogle?: unknown[];
+  }
+}
+
 export function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
