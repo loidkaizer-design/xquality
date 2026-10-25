@@ -16,29 +16,46 @@ export function Header() {
   );
 }
 
-// The native embed targets one fixed container ID, so only the first
-// AdBanner on a page mounts the container and script.
-let nativeAdClaimed = false;
-
+// Horizontal responsive AdSense unit (1214689877). The provider script is
+// loaded once in the root route head; each unit initializes itself after it
+// has a non-zero width so units below the fold / late-laid-out still fill.
 export function AdBanner() {
-  const [active, setActive] = useState(false);
+  const insRef = useRef<HTMLElement>(null);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (nativeAdClaimed) return;
-    nativeAdClaimed = true;
-    setActive(true);
-    const script = document.createElement("script");
-    script.async = true;
-    script.setAttribute("data-cfasync", "false");
-    script.src = "https://brijmohan.org/21/8eab244318e698fc87dac0cb1fe1bc57";
-    document.body.appendChild(script);
-  }, []);
+    const el = insRef.current;
+    if (!el || initialized) return;
 
-  if (!active) return null;
+    const push = () => {
+      if (initialized || el.offsetWidth === 0) return;
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch {
+        // AdSense script not ready yet — retry on next resize.
+        return;
+      }
+      setInitialized(true);
+    };
+
+    push();
+    if (initialized) return;
+    const observer = new ResizeObserver(push);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [initialized]);
 
   return (
     <div className="w-full min-w-0" aria-label="Advertisement">
-      <div id="container-8eab244318e698fc87dac0cb1fe1bc57" />
+      <ins
+        ref={insRef}
+        className="adsbygoogle"
+        style={{ display: "block" }}
+        data-ad-client="ca-pub-9476219866943996"
+        data-ad-slot="1214689877"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
     </div>
   );
 }
