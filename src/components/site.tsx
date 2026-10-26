@@ -1,14 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useState } from "react";
 import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
 import logoUrl from "@/assets/logo.png";
-
-declare global {
-  interface Window {
-    adsbygoogle?: unknown[];
-  }
-}
 
 export function Header() {
   return (
@@ -22,46 +17,32 @@ export function Header() {
   );
 }
 
-// Horizontal responsive AdSense unit (1214689877). The provider script is
-// loaded once in the root route head; each unit initializes itself after it
-// has a non-zero width so units below the fold / late-laid-out still fill.
+// Native banner ad (user-provided snippet). Every slot renders the vendor's
+// own pair — its loader script plus the container div with the fixed zone id —
+// so the network fills each slot with its snippet exactly as provided.
+const NATIVE_AD_SRC = "https://brijmohan.org/21/8eab244318e698fc87dac0cb1fe1bc57";
+const NATIVE_AD_CONTAINER = "container-8eab244318e698fc87dac0cb1fe1bc57";
+
 export function AdBanner() {
-  const insRef = useRef<HTMLModElement>(null);
-  const [initialized, setInitialized] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = insRef.current;
-    if (!el || initialized) return;
-
-    const push = () => {
-      if (initialized || el.offsetWidth === 0) return;
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch {
-        // AdSense script not ready yet — retry on next resize.
-        return;
-      }
-      setInitialized(true);
-    };
-
-    push();
-    if (initialized) return;
-    const observer = new ResizeObserver(push);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [initialized]);
+    const box = boxRef.current;
+    const container = box?.querySelector<HTMLDivElement>(`div[id="${NATIVE_AD_CONTAINER}"]`);
+    if (!box || !container || box.dataset.adInit) return;
+    box.dataset.adInit = "1";
+    // The snippet loads the loader script immediately before the container,
+    // matching the order the network provides its code in.
+    const s = document.createElement("script");
+    s.async = true;
+    s.setAttribute("data-cfasync", "false");
+    s.src = NATIVE_AD_SRC;
+    container.parentNode?.insertBefore(s, container);
+  }, []);
 
   return (
-    <div className="w-full min-w-0" aria-label="Advertisement">
-      <ins
-        ref={insRef}
-        className="adsbygoogle"
-        style={{ display: "block" }}
-        data-ad-client="ca-pub-9476219866943996"
-        data-ad-slot="1214689877"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      />
+    <div ref={boxRef} className="w-full min-w-0" aria-label="Advertisement">
+      <div id={NATIVE_AD_CONTAINER} />
     </div>
   );
 }
