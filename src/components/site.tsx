@@ -28,8 +28,8 @@ export function AdBanner() {
   useEffect(() => {
     const box = boxRef.current;
     const container = box?.querySelector<HTMLDivElement>(`div[id="${NATIVE_AD_CONTAINER}"]`);
-    if (!box || !container || box.dataset.adInit) return;
-    box.dataset.adInit = "1";
+    if (!box || !container || box.dataset["adInit"]) return;
+    box.dataset["adInit"] = "1";
     // The snippet loads the loader script immediately before the container,
     // matching the order the network provides its code in.
     const s = document.createElement("script");
