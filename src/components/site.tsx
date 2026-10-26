@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play } from "lucide-react";
 import type { Video } from "@/lib/videos.functions";
 import logoUrl from "@/assets/logo.png";
