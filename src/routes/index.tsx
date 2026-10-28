@@ -24,17 +24,20 @@ function Index() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <AdBanner />
         <div className="mt-6 flex gap-6">
           <section className="flex-1">
             <h1 className="font-display mb-4 text-3xl tracking-wide">Latest Videos</h1>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {data.map((v) => <VideoCard key={v.file_code} v={v} />)}
+              {data.map((v) => (
+                <VideoCard key={v.file_code} v={v} />
+              ))}
             </div>
             {data.length === 0 && <p className="text-muted-foreground">No videos yet.</p>}
           </section>
         </div>
-        <div className="mt-8"><AdBanner /></div>
+        <div className="mt-10 border-t border-border pt-6">
+          <AdBanner />
+        </div>
       </main>
     </div>
   );

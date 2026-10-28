@@ -40,9 +40,17 @@ export function AdBanner() {
   }, []);
 
   return (
-    <div ref={boxRef} className="w-full min-w-0" aria-label="Advertisement">
-      <div id={NATIVE_AD_CONTAINER} />
-    </div>
+    <section className="w-full min-w-0" aria-labelledby="native-ad-label">
+      <h2
+        id="native-ad-label"
+        className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground"
+      >
+        Ads
+      </h2>
+      <div ref={boxRef} className="w-full min-w-0" aria-label="Sponsored content">
+        <div id={NATIVE_AD_CONTAINER} />
+      </div>
+    </section>
   );
 }
 
